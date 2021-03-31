@@ -17,89 +17,67 @@
   <!-- World -->
   <gazebo reference="world"/>
 
-  <!-- Link1 -->
-  <RefLink ref="link1"/>
+  <xacro:RefLink ref="link1"/>
+  <xacro:RefLink ref="link2"/>
+  <xacro:RefLink ref="link3"/>
+  <xacro:RefLink ref="link4"/>
+  <xacro:RefLink ref="link5"/>
+  <xacro:RefLink ref="gripper_link"/>
+  <xacro:RefLink ref="gripper_link_sub"/>
 
-  <!-- Link2 -->
-  <RefLink ref="link2"/>
-
-  <!-- Link3 -->
-  <RefLink ref="link3"/>
-
-  <!-- Link4 -->
-  <RefLink ref="link4"/>
-
-  <!-- Link5 -->
-  <RefLink ref="link5"/>
-
-  <!-- gripper_link -->
-  <RefLink ref="gripper_link"/>
-
-  <!-- gripper_link_sub -->
-  <RefLink ref="gripper_link_sub"/>
-
-  <!-- end effector link -->
   <gazebo reference="end_effector_link">
     <material>Gazebo/Red</material>
   </gazebo>
 
-  <!-- ros_control plugin -->
+  <!-- ros2_control plugin -->
+  <!--
+      Valid types are: position, velocity or effort
+      Recommended default MIN and MAX are:
+      position: min position, max position
+      velocity: min vel, max vel
+      effort: not sure on units... demo uses -1000 to 1000
+  -->
+  <xacro:macro name="GzJointControl" params="joint_name min max type gear_ratio">
+    <joint name="${joint_name}">
+      <command_interface name="${type}">
+        <param name="min">${min}</param>
+        <param name="max">${max}</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+    <!-- It's not clear if this method of transmission definition is currently supported, but it doesn't break anything
+    and it is cleaner than other definition styles... postponing this TODO until transmissions are actually needed...
+    relevant git issue- https://github.com/ros-controls/ros2_control/issues/291 -->
+    <transmission name="${joint_name}_transmission">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="${joint_name}_actuator">
+        <mechanicalReduction>${gear_ratio}</mechanicalReduction>
+      </actuator>
+      <joint name="${joint_name}">
+        <offset>0.0</offset>
+      </joint>
+    </transmission>
+  </xacro:macro>
+
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+
+    <xacro:GzJointControl joint_name="joint1" min="-2.82743338823" max="2.82743338823" type="position" gear_ratio="1"/>
+    <xacro:GzJointControl joint_name="joint2" min="-1.79070781255" max="1.57079632679" type="position" gear_ratio="1"/>
+    <xacro:GzJointControl joint_name="joint3" min="-0.94247779607" max="1.38230076758" type="position" gear_ratio="1"/>
+    <xacro:GzJointControl joint_name="joint4" min="-1.79070781255" max="2.04203522483" type="position" gear_ratio="1"/>
+    <xacro:GzJointControl joint_name="gripper" min="-1" max="1" type="effort" gear_ratio="1"/>
+    <xacro:GzJointControl joint_name="gripper_sub" min="-1" max="1" type="effort" gear_ratio="1"/>
+  </ros2_control>
+
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <controlPeriod>0.001</controlPeriod>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <parameters>$(find turtlebot3_manipulation_gazebo)/config/gz_controller.yaml</parameters>
     </plugin>
   </gazebo>
-
-  <!-- loading plugin: mimic joints works in gazebo now -->
-  <!-- <gazebo>
-    <plugin name="gazebo_gripper_ros_control" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
-      <joint>gripper</joint>
-      <mimicJoint>gripper_sub</mimicJoint>
-      <multiplier>1.0</multiplier>
-      <offset>0.0</offset>
-    </plugin>
-  </gazebo> -->
-
-  <!-- camera -->
-  <!-- Noise is sampled independently per pixel on each frame.
-        That pixel's noise value is added to each of its color
-        channels, which at that point lie in the range [0,1]. -->
-  <!-- <gazebo reference="camera_link">
-    <sensor type="camera" name="intel_realsense_r200">
-      <update_rate>30.0</update_rate>
-      <camera name="head">
-        <horizontal_fov>1.02974</horizontal_fov>
-        <image>
-          <width>1920</width>
-          <height>1080</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.007</stddev>
-        </noise>
-      </camera>
-      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>camera/color</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-        <frameName>camera_link</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
-  </gazebo> -->
 
 </robot>

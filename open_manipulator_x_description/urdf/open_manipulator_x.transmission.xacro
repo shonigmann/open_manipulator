@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
+<!-- TODO: it seems like the transmissions should be specified with the joint and command interface
+           (currently in ...gazebo.xacro). This probably doesn't do anything as is.  -->
   <!-- Transmission macro -->
   <xacro:macro name="SimpleTransmissionPosition" params="joint n">
     <transmission name="tran${n}">

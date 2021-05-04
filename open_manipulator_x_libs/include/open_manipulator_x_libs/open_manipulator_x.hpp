@@ -19,6 +19,7 @@
 #ifndef OPEN_MANIPULTOR_X_HPP
 #define OPEN_MANIPULTOR_X_HPP
 
+
 #include "dynamixel.hpp"
 #include "custom_trajectory.hpp"
 #include "kinematics.hpp"

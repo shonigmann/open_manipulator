@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:arg name="run_arm_control" default="True"/>
+
   <xacro:if value="$(arg run_arm_control)">
 
     <!-- ros2_control plugin -->

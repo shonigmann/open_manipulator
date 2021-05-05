@@ -2,11 +2,19 @@
 <!-- OpenManipulator Chain -->
 <robot name="open_manipulator_x" xmlns:xacro="http://ros.org/wiki/xacro">
 
+  <xacro:arg name="run_arm_control" default="True"/>
+  <xacro:arg name="gazebo" default="True"/>
+
   <!-- Import Rviz colors -->
   <xacro:include filename="$(find open_manipulator_x_description)/urdf/materials.xacro" />
 
   <!-- Import all Gazebo-customization elements, including Gazebo colors -->
-  <xacro:include filename="$(find open_manipulator_x_description)/urdf/open_manipulator_x.gazebo.xacro" />
+  <xacro:if value="$(arg gazebo)">
+    <xacro:include filename="$(find open_manipulator_x_description)/urdf/open_manipulator_x.gazebo.xacro" />
+  </xacro:if>
+
+  <!-- Import ROS2 Control elements -->
+  <xacro:include filename="$(find open_manipulator_x_description)/urdf/open_manipulator_x.controller.xacro" />
 
   <!-- Import Transmission -->
   <xacro:include filename="$(find open_manipulator_x_description)/urdf/open_manipulator_x.transmission.xacro" />

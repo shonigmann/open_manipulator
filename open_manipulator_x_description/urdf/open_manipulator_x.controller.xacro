@@ -80,7 +80,7 @@
           <!--      <ros>-->
           <!--        <namespace>TODO</namespace>-->
           <!--      </ros>-->
-          <parameters>$(find turtlebot3_manipulation_gazebo)/config/gz_controller.yaml</parameters>
+          <parameters>$(find open_manipulator_x_controller)/config/gz_controller.yaml</parameters>
         </plugin>
       </gazebo>
     </xacro:if>

@@ -59,7 +59,7 @@ install(FILES 99-open-manipulator-cdc.rules
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(DIRECTORY launch param
+install(DIRECTORY launch param config
   DESTINATION share/${PROJECT_NAME}
 )
 
